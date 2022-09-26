@@ -25,7 +25,7 @@ class Session:
         self.__changeProxy = library.changeProxy
         self.__changeProxy.restype = ctypes.c_void_p
         self.__uuid = json.loads(pull_from_mem(self.__session(
-            proxy.encode('utf-8'))) if not one_time else "")['sessionId']
+            proxy.encode('utf-8'))) if not one_time else '{"sessionId":""}')['sessionId']
         self.__closeSession = library.closeSession
         self.__closeSession.restype = ctypes.c_void_p
         self.cookies = Cookies()
@@ -75,7 +75,8 @@ class Session:
         payload['parameters']['headerOrder'] = list(
             payload['parameters']['headers'].keys())
         if request_type == "POST" or request_type == "PUT":
-            payload['parameters']['form'] = kwargs.get("data", [])
+            if kwargs.get("data"):
+                payload['parameters']['form'] = kwargs.get("data")
             payload['parameters']['json'] = json.dumps(
                 kwargs.get("json", {}), sort_keys=True)
         return payload
